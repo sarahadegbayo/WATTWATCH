@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .chart-placeholder {
+            background: linear-gradient(135deg, #f5f7fa 25%, #e4e7eb 25%, #e4e7eb 50%, #f5f7fa 50%, #f5f7fa 75%, #e4e7eb 75%);
+            background-size: 40px 40px;
+            animation: move 2s linear infinite;
+        }
+        @keyframes move {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+        
+        /* Equal height for sidebar and content */
+        .main-container {
+            display: flex;
+             min-height: calc(100vh-80px);  /*Adjust 80px to match footer height */
+             max-height: 100vh;
+        }
+        .sidebar {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 flex flex-col min-h-screen">
+    <!-- Main Container -->
+    <div class="main-container flex-1">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white text-slate-800 flex flex-col border-r border-slate-200 shadow-sm sidebar">
+            <!-- Logo -->
+            <div class="px-5 pb-5 pt-5">
+                <img src="./Images/logo2.png" alt="Logo"/>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex-1 flex flex-col p-2 space-y-1 mt-2">
+                <a href="./landingpage.html" class="flex items-center p-4 hover:bg-slate-100 rounded-lg">
+                    <i class="fas fa-home mr-3 text-slate-600"></i>
+                    Home
+                </a>
+                <a href="./Outagemap.html" class="flex items-center p-4 hover:bg-slate-100 rounded-lg">
+                    <i class="fas fa-map mr-3 text-slate-600"></i>
+                    Outage Map
+                </a>
+                <a href="./Reportoutage.html" class="flex items-center p-4 hover:bg-slate-100 rounded-lg">
+                    <i class="fas fa-exclamation-triangle mr-3 text-slate-600"></i>
+                    Report Outage
+                </a>
+                <a href="./Dashboard.html" class="flex items-center p-4 bg-blue-100 text-blue-600 rounded-lg">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Dashboard
+                </a>
+            </nav>
+
+            <!-- Logout -->
+            <div class="mt-auto p-4 border-t border-slate-200">
+                <button id="logoutButton" class="flex items-center w-full p-2 hover:bg-slate-100 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3 text-slate-600"></i>
+                    Log out
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6 overflow-auto bg-white">
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-4 border-b border-slate-200 shadow-sm mb-6">
+                <h1 class="text-2xl font-semibold text-slate-800">Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <!-- Notification Bell -->
+                    <button class="relative p-2 rounded-full hover:bg-slate-100">
+                        <i class="fas fa-bell text-slate-600"></i>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </button>
+                    
+                    <!-- User Profile -->
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center space-x-2 p-1 rounded-full hover:bg-slate-100">
+                            <span class="text-slate-700">Miracle Johnson</span>
+                            <div class="flex items-center">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" 
+                                     class="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                                     alt="User profile">
+                                <i class="fas fa-chevron-down ml-1 text-slate-500 text-sm"></i>
+                            </div>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-1 hidden z-10 border border-slate-200">
+                            <a href="#" class="flex items-center px-4 py-2 text-slate-700 hover:bg-slate-100">
+                                <i class="fas fa-user mr-3 text-sm"></i>
+                                <span>User Profile</span>
+                            </a>
+                            <a href="#" class="flex items-center px-4 py-2 text-slate-700 hover:bg-slate-100">
+                                <i class="fas fa-edit mr-3 text-sm"></i>
+                                <span>Edit Profile</span>
+                            </a>
+                            <div class="border-t border-slate-200 my-1"></div>
+                            <button id="dropdownLogoutButton" class="w-full text-left flex items-center px-4 py-2 text-slate-700 hover:bg-slate-100">
+                                <i class="fas fa-sign-out-alt mr-3 text-sm"></i>
+                                <span>Log out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Welcome back, Miracle!</h2>
+                <p class="text-slate-600">Here's what's going on with power in your area</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <i class="fas fa-exclamation-circle text-blue-500 text-3xl mb-4"></i>
+                    <h3 class="font-semibold text-slate-800 mb-1">Report</h3>
+                    <p class="text-slate-500 text-sm mb-1">This Month</p>
+                    <div class="text-2xl font-bold text-slate-800">7</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <i class="fas fa-bolt text-green-500 text-3xl mb-4"></i>
+                    <h3 class="font-semibold text-slate-800 mb-1">Restored</h3>
+                    <p class="text-slate-500 text-sm mb-1">3 Days Ago</p>
+                    <div class="text-2xl font-bold text-slate-800">3</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <i class="fas fa-clock text-yellow-500 text-3xl mb-4"></i>
+                    <h3 class="font-semibold text-slate-800 mb-1">Last</h3>
+                    <p class="text-slate-500 text-sm mb-1">Outage</p>
+                    <div class="text-2xl font-bold text-slate-800">5</div>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Outage History -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200">Your Outage History</h3>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-slate-500">
+                                <th class="pb-3 font-normal text-left">Date</th>
+                                <th class="pb-3 font-normal text-left">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-3 text-slate-800">May 15</td>
+                                <td class="py-3 text-slate-800">Ikeja</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-3 text-slate-800">May 10</td>
+                                <td class="py-3 text-slate-800">Ongoing</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 text-slate-800">May 7</td>
+                                <td class="py-3 text-slate-800">Restored</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Power Outage Trends -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-slate-800">Power Outage Trends</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded-full">Weekly</button>
+                            <button class="px-3 py-1 text-xs bg-slate-100 text-slate-600 rounded-full">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder h-64 rounded-md flex items-center justify-center text-slate-400">
+                        <p>Outage frequency chart visualization</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-width Footer -->
+    <footer class="w-full bg-black py-8 z-50">
+        <div class="px-6">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+                <!-- Logo Section -->
+                <div class="flex flex-col items-center md:items-start mb-8 md:mb-0">
+                    <div class="flex justify-center md:justify-start w-full mb-2">
+                        <img src="Images/logo.png" alt="WattWatch Logo" class="h-30 w-24 -mt-8">
+                    </div>
+                    <span class="text-gray-300 text-sm mt-2">&copy; 2023 WattWatch. All rights reserved.</span>
+                </div>
+                
+                <!-- Footer Links -->
+                <div class="w-full md:w-auto flex-1 flex flex-col md:flex-row md:justify-between gap-10">
+                    <div>
+                        <h4 class="text-gray-300 text-sm mb-2">Quick Links</h4>
+                        <ul class="space-y-1 text-gray-400 text-sm">
+                            <li><a href="./landingpage.html" class="hover:text-white">Home</a></li>
+                            <li><a href="./Outagemap.html" class="hover:text-white">Outage Map</a></li>
+                            <li><a href="./Reportoutage.html" class="hover:text-white">Report Outage</a></li>
+                            <li><a href="./Community.html" class="hover:text-white">Community Forum</a></li>
+                            <li><a href="./Dashboard.html" class="hover:text-white">My Dashboard</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-300 text-sm mb-2">Connect with us</h4>
+                        <ul class="space-y-1 text-gray-400 text-sm">
+                            <li><a href="#" class="hover:text-white">Facebook</a></li>
+                            <li><a href="#" class="hover:text-white">Instagram</a></li>
+                            <li><a href="#" class="hover:text-white">YouTube</a></li>
+                            <li><a href="#" class="hover:text-white">Twitter/X</a></li>
+                            <li><a href="#" class="hover:text-white">LinkedIn</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-300 text-sm mb-2">Company</h4>
+                        <ul class="space-y-1 text-gray-400 text-sm">
+                            <li><a href="#" class="hover:text-white">About Us</a></li>
+                            <li><a href="#" class="hover:text-white">Contact us</a></li>
+                            <li><a href="#" class="hover:text-white">Press & Media</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Logout functionality
+        function handleLogout() {
+            const confirmLogout = confirm('Are you sure you want to log out?');
+            if (confirmLogout) {
+                localStorage.removeItem('authToken');
+                window.location.href = './Login.html';
+            }
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', handleLogout);
+        document.getElementById('dropdownLogoutButton').addEventListener('click', handleLogout);
+
+        // User dropdown functionality
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', () => {
+            userDropdown.classList.add('hidden');
+        });
+
+        userDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>
