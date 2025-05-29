@@ -14,6 +14,7 @@ export const
         MONGODB_URI,
         JWT_SECRET,
         JWT_EXPIRES_IN,
+        SESSION_KEY,
     } = process.env;
 
 
