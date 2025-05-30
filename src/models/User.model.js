@@ -1,9 +1,8 @@
-// models/user.model.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
-        name: {
+        fullname: {
             type: String,
             required: [true, "User Name is required"],
             trim: true,
@@ -27,6 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
 
 const User = mongoose.model("User", userSchema);
 
