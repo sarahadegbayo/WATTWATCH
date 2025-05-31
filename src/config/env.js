@@ -9,12 +9,14 @@ console.log(envPath.toLowerCase());
 export const
     {
         PORT,
-        SERVER_URL,
+        BASE_URL,
         NODE_ENV,
         MONGODB_URI,
         JWT_SECRET,
         JWT_EXPIRES_IN,
         SESSION_KEY,
+        EMAIL_PASSWORD,
+        EMAIL_USERNAME,
     } = process.env;
 
 
