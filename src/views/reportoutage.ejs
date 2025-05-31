@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Outage</title>
+    <title>
+        <%= title %>
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
@@ -67,22 +69,34 @@
                         class="border-transparent text-gray-700 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
                         Community
                     </a>
-                    <a href="/dashboard"
-                        class="border-transparent text-gray-700 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
-                        Dashboard
-                    </a>
+                    <% if (isAuthenticated) { %>
+                        <a href="/dashboard"
+                            class="border-transparent text-gray-700 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
+                            Dashboard
+                        </a>
+                        <% } %>
                 </div>
 
                 <!-- Auth Buttons - Desktop -->
                 <div class="hidden md:flex items-center space-x-4 pr-4">
-                    <a href="/api/v1/auth/signup"
-                        class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200 whitespace-nowrap">
-                        Sign Up
-                    </a>
-                    <a href="/api/v1/auth/signin"
-                        class="border-2 border-black hover:border-gray-700 text-black hover:text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition duration-200 whitespace-nowrap">
-                        Sign In
-                    </a>
+                    <% if (!isAuthenticated) { %>
+                        <a href="/api/v1/auth/signup"
+                            class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200 whitespace-nowrap">
+                            Sign Up
+                        </a>
+                        <a href="/api/v1/auth/signin"
+                            class="border-2 border-black hover:border-gray-700 text-black hover:text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition duration-200 whitespace-nowrap">
+                            Sign In
+                        </a>
+                        <% } else { %>
+                            <form action="/api/v1/auth/signout" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit"
+                                    class="border-2 border-black hover:border-gray-700 text-black hover:text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition duration-200 whitespace-nowrap">
+                                    Sign Out
+                                </button>
+                            </form>
+                            <% } %>
                 </div>
 
                 <!-- Mobile menu button -->
@@ -103,27 +117,40 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
             <div class="pt-2 pb-3 space-y-1">
-                <a href="#"
-                    class="bg-primary bg-opacity-10 text-primary block pl-3 pr-4 py-2 border-l-4 border-primary text-base font-medium">Home</a>
-                <a href="#"
+                <a href="/"
+                    class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="/outagemap"
                     class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Outage
                     Map</a>
-                <a href="#"
-                    class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Report
+                <a href="/reportoutage"
+                    class="bg-primary bg-opacity-10 text-primary block pl-3 pr-4 py-2 border-l-4 border-primary text-base font-medium">Report
                     Outage</a>
-                <a href="#"
+                <a href="/community"
                     class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Community</a>
-                <a href="#"
-                    class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Dashboard</a>
+                <% if (isAuthenticated) { %>
+                    <a href="/dashboard"
+                        class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Dashboard</a>
+                    <% } %>
             </div>
+            <!-- Auth Buttons - Mobile -->
             <div class="pt-4 pb-3 border-t border-gray-200">
                 <div class="mt-3 space-y-1 px-2">
-                    <a href="/api/v1/auth/signup"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-primaryDark">Sign
-                        Up</a>
-                    <a href="/api/v1/auth/signin"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Log
-                        In</a>
+                    <% if (!isAuthenticated) { %>
+                        <a href="/api/v1/auth/signup"
+                            class="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-primaryDark">Sign
+                            Up</a>
+                        <a href="/api/v1/auth/signin"
+                            class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Sign
+                            In</a>
+                        <% } else { %>
+                            <form action="/api/v1/auth/signout" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit"
+                                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                                    Sign Out
+                                </button>
+                            </form>
+                            <% } %>
                 </div>
             </div>
         </div>
@@ -131,10 +158,7 @@
 
     <!-- Hero Section -->
     <div class="hero-section relative w-full h-[400px] md:h-[500px] lg:h-[600px]">
-        <!-- Dark overlay -->
         <div class="absolute inset-0 bg-black/60"></div>
-
-        <!-- Content container -->
         <div class="relative h-full flex items-center justify-center">
             <div class="max-w-3xl mx-auto px-4 text-center w-full">
                 <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -151,12 +175,10 @@
         </div>
     </div>
 
-
+    <!-- Rest of the template remains unchanged -->
     <section class="bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto pt-20">
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-
                 <div class="border-2 border-black rounded-lg p-6">
                     <h2 class="text-2xl font-bold mb-6">Location</h2>
                     <form class="space-y-6">
@@ -171,48 +193,35 @@
                         </button>
                     </form>
                 </div>
-
                 <div class="flex items-center justify-center">
                     <img src="/images/map2.jpg" alt="Location map" class="w-full h-auto rounded-lg shadow-md">
                 </div>
             </div>
-
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
                 <div class="border-2 border-black rounded-lg p-6">
                     <h2 class="text-2xl font-bold mb-6">Issue type</h2>
                     <div class="grid grid-cols-1 gap-4">
-
                         <button
                             class="issue-option border border-gray-600 rounded-lg p-4 text-center hover:border-black">
                             <i class="fas fa-bolt text-xl mb-2 text-gray-700"></i>
                             <div class="font-medium">No Power</div>
                         </button>
-
-
                         <button
                             class="issue-option border border-gray-600 rounded-lg p-4 text-center hover:border-black">
                             <i class="fas fa-battery-half text-xl mb-2 text-gray-700"></i>
                             <div class="font-medium">Partial Power</div>
                         </button>
-
-
                         <button
                             class="issue-option border border-gray-600 rounded-lg p-4 text-center hover:border-black">
                             <i class="fas fa-tachometer-alt text-xl mb-2 text-gray-700"></i>
                             <div class="font-medium">Voltage Fluctuation</div>
                         </button>
-
-
                         <div class="border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center">
                             <input type="text" placeholder="Enter issue type here"
                                 class="w-full text-center focus:outline-none placeholder-gray-400">
                         </div>
                     </div>
                 </div>
-
-
                 <div class="flex items-center justify-center">
                     <img src="/images/light.jpg" alt="Power issue illustration"
                         class="w-full h-auto rounded-lg shadow-md">
@@ -236,9 +245,7 @@
 
     <section class="bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl mx-auto text-center">
-
             <div class="border-2 border-gray-200 rounded-lg p-8 mb-8">
-                <!-- Upload Area -->
                 <label for="file-upload"
                     class="upload-area rounded-lg p-8 mb-6 cursor-pointer border border-dashed border-gray-300 hover:bg-gray-50 transition">
                     <div class="flex flex-col items-center justify-center">
@@ -249,39 +256,33 @@
                     </div>
                     <input type="file" class="hidden" id="file-upload" />
                 </label>
-
                 <p class="text-sm text-gray-500">Max 10 MB · Supported: JPG, PNG, MP4</p>
             </div>
-
             <button
                 class="w-full md:w-auto bg-black text-white py-3 px-8 rounded-lg font-medium hover:bg-gray-800 transition duration-200">
                 Submit Outage Report
             </button>
-
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="bg-black py-12">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row md:items-start md:justify-between gap-10">
-
             <div class="flex flex-col items-center md:items-start mb-8 md:mb-0 w-full md:w-auto">
                 <div class="flex justify-center md:justify-start w-full mb-2">
                     <img src="/images/logo.png" alt="WattWatch Logo" class="h-30 w-24 -mt-8">
                 </div>
-                <span class="text-gray-300 text-sm mt-2">&copy; 2023 WattWatch. All rights reserved.</span>
+                <span class="text-gray-300 text-sm mt-2">© 2023 WattWatch. All rights reserved.</span>
             </div>
-
-            <!-- Footer Links -->
             <div class="w-full md:w-auto flex-1 flex flex-col md:flex-row md:justify-between gap-10">
                 <div>
                     <h4 class="text-gray-300 text-sm mb-2">Quick Links</h4>
                     <ul class="space-y-1 text-gray-400 text-sm">
-                        <li><a href="./landingpage.html" class="hover:text-white">Home</a></li>
-                        <li><a href="./Outagemap.html" class="hover:text-white">Outage Map</a></li>
-                        <li><a href="./Reportoutage.html" class="hover:text-white">Report Outage</a></li>
-                        <li><a href="./Community.html" class="hover:text-white">Community Forum</a></li>
-                        <li><a href="./Dashboard.html" class="hover:text-white">My Dashboard</a></li>
+                        <li><a href="/" class="hover:text-white">Home</a></li>
+                        <li><a href="/outagemap" class="hover:text-white">Outage Map</a></li>
+                        <li><a href="/reportoutage" class="hover:text-white">Report Outage</a></li>
+                        <li><a href="/community" class="hover:text-white">Community Forum</a></li>
+                        <li><a href="/dashboard" class="hover:text-white">My Dashboard</a></li>
                     </ul>
                 </div>
                 <div>
@@ -306,15 +307,11 @@
         </div>
     </footer>
 
-
-
-
     <script>
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
         }
-
 
         document.querySelectorAll('.issue-option').forEach(option => {
             option.addEventListener('click', function () {
@@ -325,7 +322,6 @@
             });
         });
 
-        // File upload interaction
         const uploadArea = document.querySelector('.upload-area');
         const fileInput = document.getElementById('file-upload');
 
@@ -346,7 +342,6 @@
             }
         });
 
-        // Drag and drop functionality
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, preventDefaults, false);
         });
@@ -390,34 +385,6 @@
                 `;
             }
         }
-
-        document.getElementById('outageReportForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            try {
-                // Submit data to your server
-                const response = await fetch('/api/report-outage', {
-                    method: 'POST',
-                    body: new FormData(this)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    if (result.alreadySubmitted) {
-                        window.location.href = './Reportmade.html';
-                    } else {
-                        window.location.href = './Thanks.html';
-                    }
-                } else {
-                    alert('Submission failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-
     </script>
 </body>
 

@@ -60,46 +60,34 @@
 
 <body class="min-h-screen flex items-center justify-center p-4 bg-gray-100">
     <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
-        <!-- Left Column with Images -->
         <div class="w-full md:w-1/2 image-container">
-            <!-- Background Image -->
             <img src="/images/heroimage.jpg" class="background-image" />
-
-            <!-- Dim Overlay -->
             <div class="dim-overlay"></div>
-
-            <!-- Overlay Image -->
             <img src="/images/logo.png" class="overlay-image" />
         </div>
-
-        <!-- Right Column with Form -->
         <div class="w-full md:w-1/2 p-8 md:p-12">
             <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Create account</h1>
             <p class="text-gray-600 mb-8 text-sm font-bold text-center">
                 Welcome to wattwatch, create an account to get started
             </p>
-
-            <form id="signupForm" class="space-y-4">
+            <form id="signupForm" action="/api/v1/auth/signup" method="post" class="space-y-4">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input type="text" id="fullName" placeholder="Eg. Miracle Joseph"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200"
-                        required>
+                    <input type="text" name="fullname" id="fullName" placeholder="Eg. Miracle Joseph"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200">
                     <p id="nameError" class="mt-1 text-sm text-red-600"></p>
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-                    <input type="email" id="email" placeholder="mary780@gmail.com"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200"
-                        required>
+                    <input type="email" name="email" id="email" placeholder="mary780@gmail.com"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200">
                     <p id="emailError" class="mt-1 text-sm text-red-600"></p>
                 </div>
-
                 <div class="relative">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <div class="relative">
-                        <input type="password" id="password" required placeholder="Enter Password"
+                        <input type="password" name="password" id="password" placeholder="Enter Password"
                             class="w-full px-4 py-3 pr-10 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200">
                         <button type="button" onclick="togglePasswordVisibility('password')"
                             class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -129,11 +117,11 @@
                         <p id="strengthText" class="text-xs text-gray-500">Password strength</p>
                     </div>
                 </div>
-
                 <div class="relative">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                     <div class="relative">
-                        <input type="password" id="confirmPassword" required placeholder="Confirm Password"
+                        <input type="password" name="confirmPassword" id="confirmPassword"
+                            placeholder="Confirm Password"
                             class="w-full px-4 py-3 pr-10 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition duration-200">
                         <button type="button" onclick="togglePasswordVisibility('confirmPassword')"
                             class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -154,25 +142,21 @@
                     </div>
                     <p id="confirmPasswordError" class="mt-1 text-sm text-red-600"></p>
                 </div>
-
                 <button type="submit"
                     class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-4 rounded-2xl transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 mt-6">
                     Sign Up
                 </button>
-
                 <div class="flex items-center my-6">
                     <div class="flex-grow h-px bg-gray-300"></div>
                     <span class="mx-4 text-sm text-gray-500">Or</span>
                     <div class="flex-grow h-px bg-gray-300"></div>
                 </div>
-
                 <div class="space-y-4">
                     <button type="button"
                         class="w-full py-3 border border-gray-300 rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-50 transition px-4">
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5" />
                         <span>Sign up with Google</span>
                     </button>
-
                     <button type="button"
                         class="w-full py-3 bg-primary text-white rounded-2xl flex items-center justify-center gap-3 hover:bg-primaryDark transition px-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -183,12 +167,16 @@
                         <span>Sign up with Apple</span>
                     </button>
                 </div>
-
                 <div class="text-center text-sm text-gray-600">
                     Already have an account?
                     <a href="/api/v1/auth/signin" class="text-primary hover:text-primaryDark font-medium">Log In</a>
                 </div>
             </form>
+            <% if (error) { %>
+                <p class="mt-4 text-center text-sm text-red-600">
+                    <%= error %>
+                </p>
+                <% } %>
         </div>
     </div>
 
@@ -216,7 +204,6 @@
             const password = document.getElementById('password');
             const confirmPassword = document.getElementById('confirmPassword');
 
-            // Password strength indicators
             const strengthBars = [
                 document.getElementById('strengthBar1'),
                 document.getElementById('strengthBar2'),
@@ -225,7 +212,6 @@
             ];
             const strengthText = document.getElementById('strengthText');
 
-            // Validate name - letters and spaces only, min 2 chars
             function validateName() {
                 const nameRegex = /^[a-zA-Z\s]{2,}$/;
                 if (!nameRegex.test(fullName.value)) {
@@ -236,7 +222,6 @@
                 return true;
             }
 
-            // Validate email format
             function validateEmail() {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(email.value)) {
@@ -247,21 +232,15 @@
                 return true;
             }
 
-            // Check password strength and update visual indicator
             function checkPasswordStrength() {
                 const value = password.value;
                 let strength = 0;
 
-                // Length check
                 if (value.length >= 8) strength++;
-                // Uppercase check
                 if (/[A-Z]/.test(value)) strength++;
-                // Number check
                 if (/\d/.test(value)) strength++;
-                // Special char check
                 if (/[^A-Za-z0-9]/.test(value)) strength++;
 
-                // Update strength bars
                 strengthBars.forEach((bar, index) => {
                     if (index < strength) {
                         bar.classList.remove('bg-gray-300');
@@ -278,20 +257,11 @@
                     }
                 });
 
-                // Update strength text
-                const strengthMessages = [
-                    'Very weak',
-                    'Weak',
-                    'Medium',
-                    'Strong',
-                    'Very strong'
-                ];
+                const strengthMessages = ['Very weak', 'Weak', 'Medium', 'Strong', 'Very strong'];
                 strengthText.textContent = `Password strength: ${strengthMessages[strength]}`;
-
-                return strength >= 3; // Require at least medium strength
+                return strength >= 3;
             }
 
-            // Validate password meets requirements
             function validatePassword() {
                 if (!checkPasswordStrength()) {
                     document.getElementById('passwordError').textContent = 'Password must be at least 8 characters with uppercase, number, and special character';
@@ -301,7 +271,6 @@
                 return true;
             }
 
-            // Validate passwords match
             function validateConfirmPassword() {
                 if (password.value !== confirmPassword.value) {
                     document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
@@ -311,29 +280,24 @@
                 return true;
             }
 
-            // Event listeners for real-time validation
             fullName.addEventListener('input', validateName);
             email.addEventListener('input', validateEmail);
             password.addEventListener('input', function () {
                 validatePassword();
-                // If confirm password has value, validate it too
                 if (confirmPassword.value) validateConfirmPassword();
             });
             confirmPassword.addEventListener('input', validateConfirmPassword);
 
-            // Form submission handler
             form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
                 const isNameValid = validateName();
                 const isEmailValid = validateEmail();
                 const isPasswordValid = validatePassword();
                 const isConfirmPasswordValid = validateConfirmPassword();
 
-                if (isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid) {
-                    // Form is valid - submit or redirect
-                    window.location.href = './Accountcreationsuccess.html';
+                if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
+                    e.preventDefault();
                 }
+                // If all validations pass, let the form submit to the server
             });
         });
     </script>
