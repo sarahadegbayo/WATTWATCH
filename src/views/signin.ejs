@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .dim-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 0 12px 12px 0;
+            z-index: 1;
+        }
+
+        .overlay-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            max-width: 60%;
+            max-height: 60%;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            color: #ef4446;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 bg-gray-100">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+        <div class="w-full md:w-1/2 image-container">
+            <img src="/images/heroimage.jpg" class="background-image" />
+            <div class="dim-overlay"></div>
+            <img src="/images/logo.png" class="overlay-image" />
+        </div>
+        <div class="w-full md:w-1/2 p-8 md:p-12">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome back</h1>
+            <p class="text-gray-600 mb-8 text-sm font-bold">Please enter your details to get started!</p>
+            <form id="loginForm" action="/api/v1/auth/signin" method="post" class="space-y-6">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="email" name="email"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        placeholder="mary780@gmail.com">
+                    <div class="error-message" id="email-error">Please enter a valid email address</div>
+                </div>
+                <div class="relative">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password"
+                            class="w-full px-4 py-3 pr-10 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                            placeholder="Enter Password" minlength="8">
+                        <button type="button" onclick="togglePasswordVisibility()"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 text-gray-400 hidden" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-messages mt-2 space-y-1">
+                        <div class="error-message" id="password-length">• Minimum of 8 characters</div>
+                        <div class="error-message" id="password-uppercase">• At least one uppercase letter</div>
+                        <div class="error-message" id="password-number">• At least one number</div>
+                        <div class="error-message" id="password-special">• At least one special character</div>
+                    </div>
+                    <a href="/api/v1/auth/reset"
+                        class="text-sm text-blue-600 hover:text-blue-800 font-medium mt-2 inline-block">Forgot
+                        password?</a>
+                </div>
+                <button type="submit"
+                    class="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Sign In
+                </button>
+                <div class="text-center text-sm text-gray-600">
+                    Don't have an account?
+                    <a href="/api/v1/auth/signup" class="text-blue-600 hover:text-blue-800 font-medium">Sign Up</a>
+                </div>
+            </form>
+            <% if (error) { %>
+                <p class="mt-4 text-center text-sm text-red-600">
+                    <%= error %>
+                </p>
+                <% } %>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const eyeOffIcon = document.getElementById('eye-off-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeOffIcon.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeOffIcon.classList.add('hidden');
+            }
+        }
+
+        function validatePassword(password) {
+            const errors = [];
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                number: /\d/.test(password),
+                special: /[@$!%*?&]/.test(password)
+            };
+
+            if (!requirements.length) errors.push('password-length');
+            if (!requirements.uppercase) errors.push('password-uppercase');
+            if (!requirements.number) errors.push('password-number');
+            if (!requirements.special) errors.push('password-special');
+
+            return errors;
+        }
+
+        function showErrors(errors) {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            errors.forEach(errorId => {
+                const errorElement = document.getElementById(errorId);
+                if (errorElement) errorElement.style.display = 'block';
+            });
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            const password = document.getElementById('password');
+            const errors = validatePassword(password.value);
+
+            if (errors.length > 0) {
+                showErrors(errors);
+                e.preventDefault();
+            }
+            // If no errors, let the form submit to the server
+        });
+
+        document.getElementById('password').addEventListener('input', function () {
+            const errors = validatePassword(this.value);
+            showErrors(errors);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1A3C34',
+                        primaryDark: '#14342B',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .light-butter-bg {
+            background-color: #fef5d4;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .container-80 {
+            width: 70%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bg-baby-pink {
+            background-color: #ffd6e5;
+        }
+
+        .bg-very-light-butter {
+            background-color: #fff5e1;
+        }
+
+        .bg-light-grey {
+            background-color: #f3f4f6;
+        }
+
+        .bg-sky-blue {
+            background-color: #e0f2fe;
+        }
+
+        .bullet {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: black;
+            border-radius: 50%;
+            margin: 0 6px;
+        }
+
+        .dotted-oval {
+            border: 2px dotted #000;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .oval-1 {
+            width: 500px;
+            height: 350px;
+        }
+
+        .oval-2 {
+            width: 350px;
+            height: 250px;
+        }
+
+        @media (max-width: 640px) {
+            .container-80 {
+                width: 90%;
+            }
+
+            .dotted-oval {
+                display: none;
+                /* Hide ovals on mobile for simplicity */
+            }
+
+            .oval-1,
+            .oval-2 {
+                display: none;
+            }
+
+            .join-community img {
+                width: 10vw;
+                height: 10vw;
+                min-width: 40px;
+                min-height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16 md:h-24">
+                <!-- Large Logo at extreme left -->
+                <div class="flex-shrink-0">
+                    <img src="/images/logo2.png" class="w-32 h-auto md:w-40" />
+                </div>
+
+                <!-- Desktop Menu Items -->
+                <div class="hidden md:flex md:space-x-6 md:flex-1 md:justify-center">
+                    <a href="/"
+                        class="text-gray-700 hover:text-gray-900 px-2 py-1 text-sm border-b-2 border-transparent hover:border-gray-300">Home</a>
+                    <a href="/outagemap"
+                        class="text-gray-700 hover:text-gray-900 px-2 py-1 text-sm border-b-2 border-transparent hover:border-gray-300">Outage
+                        Map</a>
+                    <a href="/reportoutage"
+                        class="text-gray-700 hover:text-gray-900 px-2 py-1 text-sm border-b-2 border-transparent hover:border-gray-300">Report
+                        Outage</a>
+                    <a href="/community"
+                        class="text-primary border-b-2 border-primary px-2 py-1 text-sm font-medium">Community</a>
+                    <% if (isAuthenticated) { %>
+                        <a href="/dashboard"
+                            class="border-transparent text-gray-700 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
+                            Dashboard
+                        </a>
+                        <% } %>
+                </div>
+
+                <!-- Auth Buttons - Desktop -->
+                <div class="hidden md:flex items-center space-x-2 pr-2">
+                    <% if (!isAuthenticated) { %>
+                        <a href="/api/v1/auth/signup"
+                            class="bg-primary hover:bg-primaryDark text-white px-3 py-1.5 rounded-md text-sm font-medium">Sign
+                            Up</a>
+                        <a href="/api/v1/auth/signin"
+                            class="border border-black hover:border-gray-700 text-black hover:text-gray-700 px-3 py-1.5 rounded-md text-sm">Sign
+                            In</a>
+                        <% } else { %>
+                            <form action="/api/v1/auth/signout" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit"
+                                    class="border border-black hover:border-gray-700 text-black hover:text-gray-700 px-3 py-1.5 rounded-md text-sm">Sign
+                                    Out</button>
+                            </form>
+                            <% } %>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center pr-2">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+                        class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="/"
+                    class="bg-primary bg-opacity-10 text-primary block pl-3 pr-4 py-2 border-l-4 border-primary text-sm">Home</a>
+                <a href="/outagemap"
+                    class="text-gray-500 hover:bg-gray-50 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm">Outage
+                    Map</a>
+                <a href="/reportoutage"
+                    class="text-gray-500 hover:bg-gray-50 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm">Report
+                    Outage</a>
+                <a href="/community"
+                    class="text-gray-500 hover:bg-gray-50 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm">Community</a>
+                <a href="/dashboard"
+                    class="text-gray-500 hover:bg-gray-50 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm">Dashboard</a>
+            </div>
+            <!-- Auth Buttons - Mobile -->
+            <div class="px-4 py-2 flex flex-col space-y-2">
+                <% if (!isAuthenticated) { %>
+                    <a href="/api/v1/auth/signup"
+                        class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-md text-sm font-medium text-center">Sign
+                        Up</a>
+                    <a href="/api/v1/auth/signin"
+                        class="border border-black hover:border-gray-700 text-black hover:text-gray-700 px-4 py-2 rounded-md text-sm text-center">Sign
+                        In</a>
+                    <% } else { %>
+                        <form action="/api/v1/auth/signout" method="post" style="display:inline;">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit"
+                                class="border border-black hover:border-gray-700 text-black hover:text-gray-700 px-4 py-2 rounded-md text-sm text-center">Sign
+                                Out</button>
+                        </form>
+                        <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section 1 -->
+    <section class="h-screen flex items-center py-12 md:py-16">
+        <div class="container-80">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-6">Community Forum</h1>
+                    <p class="text-lg md:text-xl text-gray-600 mb-6">Ask questions, share updates, and help fellow
+                        Nigerians stay powered up.</p>
+                    <button
+                        class="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition text-base md:text-sm">Start
+                        a Discussion</button>
+                </div>
+                <svg width="646" height="413" viewBox="0 0 646 413" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="max-w-full h-auto">
+                    <!-- SVG content remains the same -->
+                    <path
+                        d="M156.292 245.926C168.115 237.716 212.104 222.927 232.62 216.559H255.664C269.341 219.949 300.067 228.098 313.56 233.569C327.054 239.039 351.655 271.432 361.533 286.476L350.786 307.056C323.433 334.043 345.472 357.87 360.059 366.684C338.178 366.684 328.756 358.478 326.781 354.375C328.969 366.775 330.732 397.227 331.339 410.903H170.416V386.048H109.039C103.382 324.161 141.513 256.189 156.292 245.926Z"
+                        fill="url(#paint0_linear_305_322)" />
+                    <!-- Other SVG paths... -->
+                    <defs>
+                        <!-- Gradient and pattern definitions remain the same -->
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="light-butter-bg py-8 md:py-12 relative">
+        <div class="container-80 relative">
+            <!-- Navigation Buttons -->
+            <button onclick="switchPage(-1)"
+                class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-gray-700 hover:text-black transition z-10">
+                <span class="material-symbols-outlined text-3xl md:text-4xl">chevron_left</span>
+            </button>
+            <button onclick="switchPage(1)"
+                class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-gray-700 hover:text-black transition z-10">
+                <span class="material-symbols-outlined text-3xl md:text-4xl">chevron_right</span>
+            </button>
+
+            <div id="page1" class="active-page">
+                <div class="space-y-6 md:space-y-8">
+                    <div class="grid md:grid-cols-[45%_55%] gap-4 md:gap-8 items-center">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-4">Partnership Countries</h2>
+                            <p class="mb-2 md:mb-4 text-sm md:text-lg">Germany, South Africa, and the United States have
+                                joined Nigeria in a three-year "Power for Progress" accord</p>
+                            <div class="font-bold text-sm md:text-base">16-05-2025</div>
+                        </div>
+                        <img src="/images/images (1).jpg" class="rounded-3xl w-full h-48 md:h-auto object-cover" />
+                    </div>
+                    <div class="grid md:grid-cols-[55%_45%] gap-4 md:gap-8 items-center">
+                        <img src="/images/download.jpg" class="rounded-3xl w-full h-48 md:h-auto object-cover" />
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-4">Investment Size:</h2>
+                            <p class="mb-2 md:mb-4 text-sm md:text-lg">US $1.2 billion combined funding–60% towards
+                                grid-stability upgrades, 40% towards solar-mini-grid expansion in rural states.</p>
+                            <div class="font-bold text-sm md:text-base">10-04-2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page2" class="hidden">
+                <div class="space-y-6 md:space-y-8">
+                    <div class="grid md:grid-cols-[45%_55%] gap-4 md:gap-8 items-center">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-4">Local Workforce Impact:</h2>
+                            <p class="mb-2 md:mb-4 text-sm md:text-lg">Projected creation of 8,000 direct jobs
+                                (engineering, installation, data) and 15,000 direct.</p>
+                            <div class="font-bold text-sm md:text-base">23-05-2025</div>
+                        </div>
+                        <img src="/images/images (1).jpg" class="rounded-3xl w-full h-48 md:h-auto object-cover" />
+                    </div>
+                    <div class="grid md:grid-cols-[55%_45%] gap-4 md:gap-8 items-center">
+                        <img src="/images/images (3).jpg" class="rounded-3xl w-full h-48 md:h-auto object-cover" />
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-4">Nigeria Power Today</h2>
+                            <p class="mb-2 md:mb-4 text-sm md:text-lg">Nigeria, India, and Norway Launch $950 Million
+                                "Green Grid Alliance" to Stabilize Power and Add 500 MW Hybrid Renewables by 2028</p>
+                            <div class="font-bold text-sm md:text-base">02-04-2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 py-6 md:py-12 max-w-6xl">
+        <div class="space-y-4 md:space-y-6">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-baby-pink rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Kunle</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Lagos Mainland</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">Any update on Ikeja blackout tonight? Power's
+                            been out since 7pm in Ogudu. Has anyone heard from Ikeja Electric?</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>12m ago</span>
+                            <span class="bullet"></span>
+                            <span>4 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/free.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+                <div class="bg-very-light-butter rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Chidera</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Enugu</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">EEDC promised 10 a.m. restoration - any luck?
+                            Still dark in Enugu South. Let me know if power's back in your street</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>16m ago</span>
+                            <span class="bullet"></span>
+                            <span>2 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/are.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-very-light-butter rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Andrew</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Benue</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">Solar inverter brands that survive low
+                            voltage? PHCN keeps dipping to 160 V. Which inverters have you tested that don't fry?</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>1hr 22m ago</span>
+                            <span class="bullet"></span>
+                            <span>4 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/pore.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+                <div class="bg-light-grey rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Bolanle</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Lagos</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">Map shows power restored, but we're still
+                            blacked out. Anyone else seeing mismatch on the map?</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>47m ago</span>
+                            <span class="bullet"></span>
+                            <span>7 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/caps.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-sky-blue rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Muhammed</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Kaduna</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">Fuel price jump: sharing tips to stretch 5 L.
+                            With petrol at ₦940/L, here's what worked for me. Add yours below</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>2hr 18m ago</span>
+                            <span class="bullet"></span>
+                            <span>3 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/plan.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+                <div class="bg-baby-pink rounded-xl p-4 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1 md:mb-2">
+                            <h3 class="font-bold text-sm md:text-base">Chukwuebuka</h3>
+                            <span class="bullet"></span>
+                            <span class="font-bold text-sm md:text-base">Enugu</span>
+                        </div>
+                        <p class="text-gray-600 text-sm md:text-base mb-2">Generator fumes advice? Kids coughing. We've
+                            been on gen all night in Kubwa. Any safe way to vent in a small flat?</p>
+                        <div class="flex items-center text-xs md:text-sm font-bold">
+                            <span>22m ago</span>
+                            <span class="bullet"></span>
+                            <span>8 replies</span>
+                        </div>
+                    </div>
+                    <img src="/images/glass.jpg" class="rounded-3xl w-full md:w-48 h-32 md:h-40 object-cover" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comment Section -->
+    <section class="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
+        <div class="flex flex-col md:flex-row gap-4 items-stretch">
+            <textarea
+                class="w-full md:w-4/5 p-3 md:p-4 border-2 border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm md:text-base"
+                placeholder="Post your comment" rows="1"></textarea>
+            <button
+                class="w-full md:w-1/5 bg-gray-700 text-white px-4 py-2 md:px-8 md:py-4 rounded-lg font-bold hover:bg-gray-800 transition text-sm md:text-lg">Send</button>
+        </div>
+    </section>
+
+    <!-- Join Community Section -->
+    <section class="bg-white flex items-center justify-center min-h-screen py-12 md:py-16">
+        <div
+            class="w-full md:w-4/5 bg-[#FFF8EC] rounded-xl py-12 md:py-16 relative overflow-hidden h-[300px] md:h-[500px]">
+            <div class="dotted-oval oval-1"></div>
+            <div class="dotted-oval oval-2"></div>
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center">
+                <h2 class="text-xl md:text-2xl font-semibold text-green-900 mb-12 md:mb-24">Join the community</h2>
+                <img src="https://randomuser.me/api/portraits/men/4.jpg"
+                    class="w-12 md:w-16 h-12 md:h-16 rounded-full absolute top-full left-1/2 -translate-x-1/2 border-2 border-white" />
+            </div>
+            <img src="https://randomuser.me/api/portraits/women/1.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[15%] left-[25%] border-2 border-white" />
+            <img src="https://randomuser.me/api/portraits/men/2.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[15%] right-[25%] border-2 border-white" />
+            <img src="https://randomuser.me/api/portraits/women/3.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[35%] left-[10%] border-2 border-white" />
+            <img src="https://randomuser.me/api/portraits/women/5.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[55%] left-[15%] border-2 border-white" />
+            <img src="https://randomuser.me/api/portraits/men/6.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[35%] right-[10%] border-2 border-white" />
+            <img src="https://randomuser.me/api/portraits/men/8.jpg"
+                class="w-10 md:w-14 h-10 md:h-14 rounded-full absolute top-[55%] right-[15%] border-2 border-white" />
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-6 md:py-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-10">
+            <div class="flex flex-col items-center md:items-start mb-4 md:mb-0">
+                <div class="flex justify-center md:justify-start mb-2">
+                    <img src="/images/logo.png" alt="WattWatch Logo" class="h-16 md:h-30 w-16 md:w-24 -mt-4 md:-mt-8">
+                </div>
+                <span class="text-gray-300 text-xs md:text-sm mt-1 md:mt-2">© 2023 WattWatch. All rights
+                    reserved.</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:justify-between gap-6 md:gap-10 w-full md:w-auto">
+                <div>
+                    <h4 class="text-gray-300 text-xs md:text-sm mb-1 md:mb-2">Quick Links</h4>
+                    <ul class="space-y-1 text-gray-400 text-xs md:text-sm">
+                        <li><a href="landingpage" class="hover:text-white">Home</a></li>
+                        <li><a href="outagemap" class="hover:text-white">Outage Map</a></li>
+                        <li><a href="reportoutage" class="hover:text-white">Report Outage</a></li>
+                        <li><a href="community" class="hover:text-white">Community Forum</a></li>
+                        <li><a href="dashboard" class="hover:text-white">My Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-gray-300 text-xs md:text-sm mb-1 md:mb-2">Connect with us</h4>
+                    <ul class="space-y-1 text-gray-400 text-xs md:text-sm">
+                        <li><a href="#" class="hover:text-white">Facebook</a></li>
+                        <li><a href="#" class="hover:text-white">Instagram</a></li>
+                        <li><a href="#" class="hover:text-white">YouTube</a></li>
+                        <li><a href="#" class="hover:text-white">Twitter/X</a></li>
+                        <li><a href="#" class="hover:text-white">LinkedIn</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-gray-300 text-xs md:text-sm mb-1 md:mb-2">Company</h4>
+                    <ul class="space-y-1 text-gray-400 text-xs md:text-sm">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Contact us</a></li>
+                        <li><a href="#" class="hover:text-white">Press & Media</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentPage = 1;
+
+        function switchPage(direction) {
+            document.getElementById(`page${currentPage}`).classList.add('hidden');
+            currentPage = currentPage + direction;
+            if (currentPage < 1) currentPage = 2;
+            if (currentPage > 2) currentPage = 1;
+            document.getElementById(`page${currentPage}`).classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
